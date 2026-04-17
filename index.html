@@ -641,6 +641,35 @@
     font-weight: 700;
   }
 
+  /* ===== VIDEO SHOWCASE ===== */
+  .video-wrap { background: #000; }
+
+  .video-frame {
+    position: relative;
+    max-width: 960px;
+    margin: 0 auto;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #000;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  }
+
+  .video-frame:hover {
+    transform: translateY(-2px);
+    border-color: rgba(212, 175, 55, 0.4);
+    box-shadow: var(--bloom-gold);
+  }
+
+  .video-frame video {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background: #000;
+  }
+
   /* ===== BEFORE / AFTER SLIDERS ===== */
   .ba-wrap { background: var(--bg-alt); }
 
@@ -905,6 +934,20 @@
         <div class="stat-value">0</div>
         <div class="stat-label">Subscriptions</div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO DEMO -->
+<section class="video-wrap">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Watch It In Action</div>
+      <h2 class="section-title">From low-res to stunning — in seconds.</h2>
+      <p class="section-desc">See Neural Upscaler X4 running live inside Blender. No cloud. No waiting. Just results.</p>
+    </div>
+    <div class="video-frame">
+      <video src="demo.mp4" controls preload="metadata" playsinline></video>
     </div>
   </div>
 </section>
