@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neural Upscaler X4 — AI Image Upscaling for Blender</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg-alt: #12121a;
+    --bg-card: #1a1a24;
+    --text: #ffffff;
+    --text-dim: #a0a0b0;
+    --text-muted: #6a6a7a;
+    --accent: #7c5cff;
+    --accent-2: #00d4ff;
+    --accent-3: #ff5ca7;
+    --border: rgba(255, 255, 255, 0.08);
+    --gradient: linear-gradient(135deg, #7c5cff 0%, #00d4ff 100%);
+    --gradient-warm: linear-gradient(135deg, #ff5ca7 0%, #7c5cff 100%);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(124, 92, 255, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 60%, rgba(0, 212, 255, 0.12) 0%, transparent 50%),
+      radial-gradient(circle at 50% 90%, rgba(255, 92, 167, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 900px; }
+
+  .badge {
+    display: inline-block;
+    padding: 8px 18px;
+    background: rgba(124, 92, 255, 0.1);
+    border: 1px solid rgba(124, 92, 255, 0.3);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #c4b5ff;
+    margin-bottom: 32px;
+    letter-spacing: 0.3px;
+  }
+
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+  }
+
+  .gradient-text {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p.tagline {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    color: var(--text-dim);
+    max-width: 700px;
+    margin: 0 auto 40px;
+    font-weight: 400;
+  }
+
+  .cta-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 32px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: var(--gradient);
+    color: white;
+    box-shadow: 0 10px 40px rgba(124, 92, 255, 0.4);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 50px rgba(124, 92, 255, 0.5);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    justify-content: center;
+    margin-top: 80px;
+    flex-wrap: wrap;
+  }
+
+  .stat { text-align: center; }
+
+  .stat-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .stat-label {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  /* ===== SECTIONS ===== */
+  section { padding: 120px 24px; position: relative; }
+
+  .section-header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 72px;
+  }
+
+  .section-eyebrow {
+    color: var(--accent-2);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+
+  .section-desc {
+    color: var(--text-dim);
+    font-size: 1.15rem;
+  }
+
+  /* ===== FEATURES GRID ===== */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(124, 92, 255, 0.3);
+    box-shadow: 0 20px 60px rgba(124, 92, 255, 0.15);
+  }
+
+  .feature-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(124, 92, 255, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+  }
+
+  .feature-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .feature-card p {
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+
+  /* ===== MODELS ===== */
+  .models-wrap { background: var(--bg-alt); }
+
+  .models-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  .model-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .model-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--model-color, var(--gradient));
+  }
+
+  .model-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+  }
+
+  .model-card.medium { --model-color: linear-gradient(90deg, #34d399, #10b981); }
+  .model-card.high   { --model-color: linear-gradient(90deg, #60a5fa, #3b82f6); }
+  .model-card.ultra  { --model-color: linear-gradient(90deg, #a78bfa, #7c3aed); }
+
+  .model-tier {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .model-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .model-sub {
+    color: var(--text-dim);
+    margin-bottom: 28px;
+  }
+
+  .model-card ul { list-style: none; }
+
+  .model-card li {
+    padding: 8px 0;
+    color: var(--text-dim);
+    font-size: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .model-card li::before {
+    content: '→';
+    color: var(--accent-2);
+    font-weight: 700;
+  }
+
+  /* ===== TABLES ===== */
+  .table-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    background: rgba(124, 92, 255, 0.08);
+    color: var(--text);
+    font-weight: 600;
+    text-align: left;
+    padding: 18px 24px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 18px 24px;
+    color: var(--text-dim);
+    font-size: 15px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+
+  tbody tr:hover td { background: rgba(255, 255, 255, 0.02); color: var(--text); }
+
+  td strong { color: var(--text); }
+
+  /* ===== GPU RECOMMENDATIONS ===== */
+  .gpu-wrap { background: var(--bg-alt); }
+
+  /* ===== USE CASES ===== */
+  .use-cases {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .use-case {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    transition: all 0.3s ease;
+  }
+
+  .use-case:hover {
+    border-color: rgba(0, 212, 255, 0.3);
+    transform: translateY(-4px);
+  }
+
+  .use-case-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin-bottom: 20px;
+  }
+
+  .use-case h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .use-case p {
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+
+  /* ===== COMPARE ===== */
+  .compare-wrap { background: var(--bg-alt); }
+
+  .check { color: #34d399; font-weight: 700; font-size: 18px; }
+  .cross { color: #f87171; font-weight: 700; font-size: 18px; }
+
+  /* ===== REQUIREMENTS ===== */
+  .reqs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .req-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .req-icon {
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+
+  .req-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+
+  .req-value {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  /* ===== NOTES ===== */
+  .notes {
+    background: var(--bg-card);
+    border-left: 4px solid var(--accent-3);
+    border-radius: 12px;
+    padding: 28px 32px;
+    max-width: 840px;
+    margin: 0 auto;
+  }
+
+  .notes h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    margin-bottom: 16px;
+    color: var(--accent-3);
+  }
+
+  .notes ul { list-style: none; }
+
+  .notes li {
+    padding: 8px 0;
+    color: var(--text-dim);
+    padding-left: 24px;
+    position: relative;
+  }
+
+  .notes li::before {
+    content: '!';
+    position: absolute;
+    left: 0;
+    color: var(--accent-3);
+    font-weight: 700;
+  }
+
+  /* ===== FINAL CTA ===== */
+  .final-cta {
+    background: var(--gradient);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .final-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent 50%),
+      radial-gradient(circle at 70% 70%, rgba(0,0,0,0.2), transparent 50%);
+  }
+
+  .final-cta .container { position: relative; z-index: 1; }
+
+  .final-cta h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    color: white;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .final-cta p {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .btn-final {
+    background: white;
+    color: #7c5cff;
+    font-weight: 700;
+    padding: 18px 40px;
+    font-size: 16px;
+  }
+
+  .btn-final:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  @media (max-width: 640px) {
+    section { padding: 80px 20px; }
+    .hero { padding: 100px 20px 60px; }
+    .hero-stats { gap: 24px; margin-top: 60px; }
+    th, td { padding: 14px 16px; font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <span class="badge">✨ AI-Powered · 100% Offline · For Blender 5.0+</span>
+    <h1>
+      Upscale images <span class="gradient-text">4x</span><br>
+      without leaving Blender.
+    </h1>
+    <p class="tagline">
+      Three state-of-the-art AI models. CUDA-accelerated super-resolution. One-time purchase, no subscriptions, no cloud uploads. Your images stay on your machine — always.
+    </p>
+    <div class="cta-row">
+      <a href="#features" class="btn btn-primary">Explore features ↓</a>
+      <a href="#models" class="btn btn-secondary">See AI models</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-value">3</div>
+        <div class="stat-label">AI Models</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">4×</div>
+        <div class="stat-label">Upscale Factor</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">100%</div>
+        <div class="stat-label">Offline</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">0</div>
+        <div class="stat-label">Subscriptions</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Features</div>
+      <h2 class="section-title">Everything you need for professional upscaling.</h2>
+      <p class="section-desc">Built from the ground up for Blender artists who demand quality, speed, and privacy.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🚀</div>
+        <h3>GPU-Accelerated</h3>
+        <p>PyTorch 2.7 + CUDA 12.8. Optimized for RTX 40 and RTX 50 series cards.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>100% Offline</h3>
+        <p>Your images never leave your machine. No cloud uploads, no data collection.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Background Processing</h3>
+        <p>Keep working in Blender while the AI upscales your images in the background.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📁</div>
+        <h3>Batch Processing</h3>
+        <p>Drop a folder of images, get 4× upscaled results. Perfect for sequences and iterations.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Precision Control</h3>
+        <p>Choose float32, bfloat16, or float16 to balance quality and VRAM usage.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💎</div>
+        <h3>One-Time Purchase</h3>
+        <p>No subscriptions. No recurring fees. No usage limits. Yours forever.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODELS -->
+<section class="models-wrap" id="models">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">AI Models</div>
+      <h2 class="section-title">Three models. Every quality need covered.</h2>
+      <p class="section-desc">All three bundled inside. Pick the right tool for the job with a single click.</p>
+    </div>
+
+    <div class="models-grid">
+      <div class="model-card medium">
+        <div class="model-tier">Medium</div>
+        <div class="model-name">Swin2SR</div>
+        <p class="model-sub">Fast & balanced</p>
+        <ul>
+          <li>Fastest processing</li>
+          <li>Ideal for large batches</li>
+          <li>Perfect for previews</li>
+          <li>Lower VRAM usage</li>
+        </ul>
+      </div>
+      <div class="model-card high">
+        <div class="model-tier">High</div>
+        <div class="model-name">HAT</div>
+        <p class="model-sub">Sharp & detailed</p>
+        <ul>
+          <li>Superior detail recovery</li>
+          <li>Best all-around choice</li>
+          <li>Photorealistic results</li>
+          <li>Balanced speed & quality</li>
+        </ul>
+      </div>
+      <div class="model-card ultra">
+        <div class="model-tier">Ultra</div>
+        <div class="model-name">DAT</div>
+        <p class="model-sub">Maximum fidelity</p>
+        <ul>
+          <li>Highest quality output</li>
+          <li>Finest detail preservation</li>
+          <li>Print-ready results</li>
+          <li>Final delivery grade</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRECISION TABLE -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Precision Guide</div>
+      <h2 class="section-title">The right precision for every resolution.</h2>
+      <p class="section-desc">Save VRAM, go faster, keep quality — the built-in precision selector has you covered.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Input Resolution</th>
+            <th>Output (4×)</th>
+            <th>Recommended Precision</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>720p</strong> (1280×720)</td><td>~5K</td><td><strong>float32</strong> — max quality</td></tr>
+          <tr><td><strong>1080p</strong> (1920×1080)</td><td>4K</td><td><strong>float32</strong> or <strong>bfloat16</strong></td></tr>
+          <tr><td><strong>2K</strong> (2560×1440)</td><td>~10K</td><td><strong>bfloat16</strong></td></tr>
+          <tr><td><strong>4K</strong> (3840×2160)</td><td>~16K</td><td><strong>bfloat16</strong> (float32 may OOM)</td></tr>
+          <tr><td><strong>8K</strong> (7680×4320)</td><td>~32K</td><td><strong>float16</strong> (workstation GPU)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- VRAM TABLE -->
+<section style="padding-top: 0;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">VRAM Usage</div>
+      <h2 class="section-title">Know what your GPU can handle.</h2>
+      <p class="section-desc">Approximate values for the <strong>High (HAT)</strong> model. Medium uses ~30% less. Ultra is similar to HAT.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Input Resolution</th>
+            <th>VRAM — float32</th>
+            <th>VRAM — bfloat16 / float16</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>720p (1280×720)</td><td>~4 GB</td><td>~2 GB</td></tr>
+          <tr><td>1080p (1920×1080)</td><td>~8 GB</td><td>~4 GB</td></tr>
+          <tr><td>2K (2560×1440)</td><td>~14 GB</td><td>~7 GB</td></tr>
+          <tr><td>4K (3840×2160)</td><td>~30 GB*</td><td>~15 GB</td></tr>
+          <tr><td>8K (7680×4320)</td><td>Not feasible</td><td>~55+ GB*</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="text-align:center; color: var(--text-muted); font-size: 13px; margin-top: 16px;">* Requires workstation-class GPU.</p>
+  </div>
+</section>
+
+<!-- GPU GUIDE -->
+<section class="gpu-wrap">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">GPU Guide</div>
+      <h2 class="section-title">What your card can do.</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Your GPU VRAM</th>
+            <th>Max Comfortable Input (bfloat16)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>8 GB</strong></td><td>Up to 2K (2560×1440)</td></tr>
+          <tr><td><strong>12 GB</strong></td><td>Up to 2K comfortably, 4K with care</td></tr>
+          <tr><td><strong>16 GB</strong></td><td>Up to 4K (3840×2160)</td></tr>
+          <tr><td><strong>24 GB</strong></td><td>4K easily, borderline 8K</td></tr>
+          <tr><td><strong>48 GB+</strong></td><td>8K possible</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Use Cases</div>
+      <h2 class="section-title">Built for every kind of artist.</h2>
+    </div>
+
+    <div class="use-cases">
+      <div class="use-case">
+        <div class="use-case-icon">🎨</div>
+        <h3>3D Artists</h3>
+        <p>Render at lower resolution and upscale for final delivery — cut render times without sacrificing quality.</p>
+      </div>
+      <div class="use-case">
+        <div class="use-case-icon">🖼️</div>
+        <h3>Concept Artists</h3>
+        <p>Restore and enhance low-resolution references with studio-quality detail recovery.</p>
+      </div>
+      <div class="use-case">
+        <div class="use-case-icon">🏛️</div>
+        <h3>Visualization</h3>
+        <p>Product shots, architectural renders, print-ready output with razor-sharp detail.</p>
+      </div>
+      <div class="use-case">
+        <div class="use-case-icon">🎬</div>
+        <h3>VFX & Cinematics</h3>
+        <p>Produce crisp 4K and 8K output from modest render budgets.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="compare-wrap">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Why Choose Us</div>
+      <h2 class="section-title">Neural Upscaler X4 vs Online Services.</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th style="text-align:center;">Neural Upscaler X4</th>
+            <th style="text-align:center;">Online Services</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>One-time purchase</td><td style="text-align:center;"><span class="check">✓</span></td><td style="text-align:center;"><span class="cross">✗</span> Monthly fee</td></tr>
+          <tr><td>Works offline</td><td style="text-align:center;"><span class="check">✓</span></td><td style="text-align:center;"><span class="cross">✗</span> Cloud only</td></tr>
+          <tr><td>Your images stay private</td><td style="text-align:center;"><span class="check">✓</span></td><td style="text-align:center;"><span class="cross">✗</span> Uploaded</td></tr>
+          <tr><td>Unlimited usage</td><td style="text-align:center;"><span class="check">✓</span></td><td style="text-align:center;"><span class="cross">✗</span> Quota limits</td></tr>
+          <tr><td>Integrated into Blender</td><td style="text-align:center;"><span class="check">✓</span></td><td style="text-align:center;"><span class="cross">✗</span> External</td></tr>
+          <tr><td>Batch processing</td><td style="text-align:center;"><span class="check">✓</span></td><td style="text-align:center;">Limited</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENTS -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Requirements</div>
+      <h2 class="section-title">What you need to run it.</h2>
+    </div>
+
+    <div class="reqs-grid">
+      <div class="req-item">
+        <div class="req-icon">🎨</div>
+        <div>
+          <div class="req-label">Software</div>
+          <div class="req-value">Blender 5.0+</div>
+        </div>
+      </div>
+      <div class="req-item">
+        <div class="req-icon">💻</div>
+        <div>
+          <div class="req-label">OS</div>
+          <div class="req-value">Windows 10 / 11 (64-bit)</div>
+        </div>
+      </div>
+      <div class="req-item">
+        <div class="req-icon">⚙️</div>
+        <div>
+          <div class="req-label">GPU</div>
+          <div class="req-value">NVIDIA + CUDA</div>
+        </div>
+      </div>
+      <div class="req-item">
+        <div class="req-icon">📊</div>
+        <div>
+          <div class="req-label">VRAM</div>
+          <div class="req-value">8 GB+ (16 GB+ for 4K)</div>
+        </div>
+      </div>
+      <div class="req-item">
+        <div class="req-icon">💾</div>
+        <div>
+          <div class="req-label">Disk</div>
+          <div class="req-value">~4 GB free</div>
+        </div>
+      </div>
+      <div class="req-item">
+        <div class="req-icon">🌐</div>
+        <div>
+          <div class="req-label">Internet</div>
+          <div class="req-value">Not required</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NOTES -->
+<section style="padding-top:0;">
+  <div class="container">
+    <div class="notes">
+      <h3>Important Notes</h3>
+      <ul>
+        <li>Images must be <strong>RGB</strong>. Alpha channels, normal maps, depth maps, and non-RGB data are not supported.</li>
+        <li>First run per session takes a few seconds to load the AI model. Subsequent runs are instant.</li>
+        <li>If you run out of VRAM, drop to a lower precision or use the Medium (Swin2SR) model.</li>
+        <li>Supported input: PNG, JPG, JPEG, BMP, TIFF, WebP · Output: PNG (lossless).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <h2>Crystal-clear 4× upscales.<br>Right inside Blender.</h2>
+    <p>Stop paying for cloud credits. Stop waiting for uploads. Stop compromising on privacy. <strong>Neural Upscaler X4</strong> puts professional AI super-resolution directly in your Blender workflow — where it belongs.</p>
+  </div>
+</section>
+
+<footer>
+  Neural Upscaler X4 · Built by CLOUDY SKY · Exclusively on Superhive
+</footer>
+
+</body>
+</html>
