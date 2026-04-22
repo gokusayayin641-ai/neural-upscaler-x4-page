@@ -938,6 +938,75 @@
   </div>
 </section>
 
+<!-- REQUIREMENTS (top placement — customers must see this without scrolling) -->
+<section id="requirements-top" style="padding-top: 8px;">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Requirements &amp; Important Info</div>
+      <h2 class="section-title">Read this before you buy.</h2>
+      <p class="section-desc">Make sure your setup meets these requirements and limitations.</p>
+    </div>
+
+    <div class="reqs-grid">
+      <div class="req-item">
+        <div class="req-icon">🧩</div>
+        <div>
+          <div class="req-label">Software</div>
+          <div class="req-value">Blender 5.0+</div>
+        </div>
+      </div>
+      <div class="req-item">
+        <div class="req-icon">💻</div>
+        <div>
+          <div class="req-label">OS</div>
+          <div class="req-value">Windows 10 / 11 (64-bit)</div>
+        </div>
+      </div>
+      <div class="req-item">
+        <div class="req-icon">🎮</div>
+        <div>
+          <div class="req-label">GPU</div>
+          <div class="req-value">NVIDIA + CUDA</div>
+        </div>
+      </div>
+      <div class="req-item">
+        <div class="req-icon">📊</div>
+        <div>
+          <div class="req-label">VRAM</div>
+          <div class="req-value">8 GB+ (16 GB+ for 4K)</div>
+        </div>
+      </div>
+      <div class="req-item">
+        <div class="req-icon">💾</div>
+        <div>
+          <div class="req-label">Disk</div>
+          <div class="req-value">~4 GB</div>
+        </div>
+      </div>
+      <div class="req-item">
+        <div class="req-icon">🌐</div>
+        <div>
+          <div class="req-label">Internet</div>
+          <div class="req-value">Not required</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes" style="margin-top: 22px;">
+      <h3>Important — please read</h3>
+      <ul>
+        <li><strong>Restart Blender after install.</strong> The AI engine and bundled Python libraries need a full restart to initialize.</li>
+        <li>Images must be <strong>RGB only</strong>. Alpha channels, normal maps, depth maps, roughness, metallic, and any non-color data are <strong>not supported</strong>.</li>
+        <li><strong>Windows only</strong> · <strong>Blender 5.0+ only</strong> (no support for 4.2 or older).</li>
+        <li>NVIDIA GPU with CUDA is <strong>required</strong>. AMD, Intel and Apple Silicon are not supported.</li>
+        <li>Supported input: PNG, JPG, JPEG, BMP, TIFF, WebP · Output: PNG (lossless, 8-bit).</li>
+        <li>16-bit PNG/TIFF images are auto-converted to 8-bit before upscaling.</li>
+        <li>If you run out of VRAM, drop to a lower precision or use the Medium (Swin2SR) model.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
 <!-- VIDEO DEMO -->
 <section class="video-wrap">
   <div class="container">
@@ -1281,76 +1350,6 @@
           <tr><td>Batch processing</td><td style="text-align:center;"><span class="check">✓</span></td><td style="text-align:center;">Limited</td></tr>
         </tbody>
       </table>
-    </div>
-  </div>
-</section>
-
-<!-- REQUIREMENTS -->
-<section>
-  <div class="container">
-    <div class="section-header">
-      <div class="section-eyebrow">Requirements</div>
-      <h2 class="section-title">What you need to run it.</h2>
-    </div>
-
-    <div class="reqs-grid">
-      <div class="req-item">
-        <div class="req-icon"><img src="logo_blender.png" alt="Blender" class="req-logo"></div>
-        <div>
-          <div class="req-label">Software</div>
-          <div class="req-value">Blender 5.0</div>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon">💻</div>
-        <div>
-          <div class="req-label">OS</div>
-          <div class="req-value">Windows 10 / 11 (64-bit)</div>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon"><img src="logo_nvidia.png" alt="NVIDIA" class="req-logo req-logo-wide"></div>
-        <div>
-          <div class="req-label">GPU</div>
-          <div class="req-value">NVIDIA + CUDA</div>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon">📊</div>
-        <div>
-          <div class="req-label">VRAM</div>
-          <div class="req-value">8 GB+ (16 GB+ for 4K)</div>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon">💾</div>
-        <div>
-          <div class="req-label">Disk</div>
-          <div class="req-value">~4 GB</div>
-        </div>
-      </div>
-      <div class="req-item">
-        <div class="req-icon">🌐</div>
-        <div>
-          <div class="req-label">Internet</div>
-          <div class="req-value">Not required</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- NOTES -->
-<section style="padding-top:0;">
-  <div class="container">
-    <div class="notes">
-      <h3>Important Notes</h3>
-      <ul>
-        <li>Images must be <strong>RGB</strong>. Alpha channels, normal maps, depth maps, and non-RGB data are not supported.</li>
-        <li>First run per session takes a few seconds to load the AI model. Subsequent runs are instant.</li>
-        <li>If you run out of VRAM, drop to a lower precision or use the Medium (Swin2SR) model.</li>
-        <li>Supported input: PNG, JPG, JPEG, BMP, TIFF, WebP · Output: PNG (lossless).</li>
-      </ul>
     </div>
   </div>
 </section>
