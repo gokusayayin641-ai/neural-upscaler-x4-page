@@ -973,7 +973,7 @@
         <div class="req-icon">📊</div>
         <div>
           <div class="req-label">VRAM</div>
-          <div class="req-value">8 GB+ (16 GB+ for 4K)</div>
+          <div class="req-value">12 GB+ for 4K output</div>
         </div>
       </div>
       <div class="req-item">
@@ -1221,11 +1221,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td><strong>720p</strong> (1280×720)</td><td>~5K</td><td><strong>float32</strong> — max quality</td></tr>
-          <tr><td><strong>1080p</strong> (1920×1080)</td><td>4K</td><td><strong>float32</strong> or <strong>bfloat16</strong></td></tr>
-          <tr><td><strong>2K</strong> (2560×1440)</td><td>~10K</td><td><strong>bfloat16</strong></td></tr>
-          <tr><td><strong>4K</strong> (3840×2160)</td><td>~16K</td><td><strong>bfloat16</strong> (float32 may OOM)</td></tr>
-          <tr><td><strong>8K</strong> (7680×4320)</td><td>~32K</td><td><strong>float16</strong> (workstation GPU)</td></tr>
+          <tr><td><strong>720p</strong> (1280×720)</td><td>~5K (5120×2880)</td><td><strong>float32</strong> — max quality</td></tr>
+          <tr><td><strong>1080p</strong> (1920×1080)</td><td>~8K (7680×4320)</td><td><strong>float32</strong> or <strong>bfloat16</strong></td></tr>
+          <tr><td><strong>2K</strong> (2560×1440)</td><td>~10K (10240×5760)</td><td><strong>bfloat16</strong></td></tr>
+          <tr><td><strong>4K</strong> (3840×2160)</td><td>~16K (15360×8640)</td><td><strong>bfloat16</strong> (float32 may OOM)</td></tr>
+          <tr><td><strong>8K</strong> (7680×4320)</td><td>~32K (30720×17280)</td><td><strong>float16</strong> (workstation GPU)</td></tr>
         </tbody>
       </table>
     </div>
@@ -1246,16 +1246,17 @@
         <thead>
           <tr>
             <th>Input Resolution</th>
+            <th>Output (4×)</th>
             <th>VRAM — float32</th>
             <th>VRAM — bfloat16 / float16</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>720p (1280×720)</td><td>~4 GB</td><td>~2 GB</td></tr>
-          <tr><td>1080p (1920×1080)</td><td>~8 GB</td><td>~4 GB</td></tr>
-          <tr><td>2K (2560×1440)</td><td>~14 GB</td><td>~7 GB</td></tr>
-          <tr><td>4K (3840×2160)</td><td>~30 GB*</td><td>~15 GB</td></tr>
-          <tr><td>8K (7680×4320)</td><td>Not feasible</td><td>~55+ GB*</td></tr>
+          <tr><td>720p (1280×720)</td><td>~5K (5120×2880)</td><td>~14 GB</td><td>~12 GB</td></tr>
+          <tr><td>1080p (1920×1080)</td><td>~8K (7680×4320)</td><td>~20 GB</td><td>~16 GB</td></tr>
+          <tr><td>2K (2560×1440)</td><td>~10K (10240×5760)</td><td>~28 GB*</td><td>~22 GB</td></tr>
+          <tr><td>4K (3840×2160)</td><td>~16K (15360×8640)</td><td>~48 GB*</td><td>~36 GB*</td></tr>
+          <tr><td>8K (7680×4320)</td><td>~32K (30720×17280)</td><td>Not feasible</td><td>~80+ GB*</td></tr>
         </tbody>
       </table>
     </div>
@@ -1280,11 +1281,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td><strong>8 GB</strong></td><td>Up to 2K (2560×1440)</td></tr>
-          <tr><td><strong>12 GB</strong></td><td>Up to 2K comfortably, 4K with care</td></tr>
-          <tr><td><strong>16 GB</strong></td><td>Up to 4K (3840×2160)</td></tr>
-          <tr><td><strong>24 GB</strong></td><td>4K easily, borderline 8K</td></tr>
-          <tr><td><strong>48 GB+</strong></td><td>8K possible</td></tr>
+          <tr><td><strong>12 GB</strong></td><td>Up to 720p (1280×720) — minimum to load the model</td></tr>
+          <tr><td><strong>16 GB</strong></td><td>Up to 1080p (1920×1080) comfortably</td></tr>
+          <tr><td><strong>24 GB</strong></td><td>Up to 2K (2560×1440)</td></tr>
+          <tr><td><strong>48 GB</strong></td><td>Up to 4K (3840×2160)</td></tr>
+          <tr><td><strong>80 GB+</strong></td><td>8K possible (workstation GPU)</td></tr>
         </tbody>
       </table>
     </div>
